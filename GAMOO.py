@@ -26,11 +26,11 @@ mutation_ = 0.02
 crossover = 0.3
 # parameters(genes) of popupation
 # population_size * [x1, x2, f1, f2]
-def obj_func(X):
+def default_obj_func(X):
 	f1 = 2 * X[0] + 3 * X[1]
 	f2 = 2 / X[0] + 1 / X[1]
 	return np.array([f1, f2])
-def st(X):
+def default_st(X):
 	const1 = X[0] > 10
 	const2 = X[0] < 20
 	const3 = X[1] > 20
@@ -40,7 +40,7 @@ low_bounds = [-40, -40]
 up_bounds  = [40, 40]
 class GA:
     def __init__(self, iterations=500, population_size=500, crossover=0.3, mutation=0.02, st_width=1e3, split_point=1,
-               var_num=2, obj_num=2, obj_func=obj_func, st=st, lb=low_bounds, ub=up_bounds, no_bounds=False):
+               var_num=2, obj_num=2, obj_func=default_obj_func, st=default_st, lb=low_bounds, ub=up_bounds, no_bounds=False):
         # hyperparameters
         self.iterations = iterations
         self.population_size = population_size
@@ -67,7 +67,6 @@ class GA:
                     X = rand(self.var_num) * 2 * self.st_width - self.st_width
                 else:
                     X = uniform(self.lb, self.ub)
-
                 if self.st(X):
                     break
             return X
@@ -143,6 +142,32 @@ class GA:
         return population
 
 if __name__ == '__main__':
-    ga = GA()
-    test_res = ga.evolution()
+    #ga_default = GA()
+    #default_res = ga_default.evolution()
+    #print(default_res)
+    # -------------------- Test ---------------------
+    # edit the parameters below to custom a GAMOO
+    # all you have to specify
+    # - [] test_obj_func
+    # - [] test_st
+    # - [] test_lb
+    # - [] test_ub
+    # - [] test_ub
+    # - [] var_num
+    # - [] obj_num
+    def test_obj_func(X):
+        f1 = 3 * X[0] + 4 * X[1] - 10 * X[2]
+        f2 = 1 / X[0] + 10 / X[1] - 2 / X[2]
+        f3 = 2 / X[0] + 5 / X[1] - 2 / X[2]
+        return f1, f2, f3
+    def test_st(X):
+        const1 = (20 * X[0] + X[1]) < 10
+        const2 = (10 * X[1] + X[2]) < 30
+        return all([const1, const2])
+
+    test_lb = (-40, -40, -40)
+    test_ub = (40, 40, 40)
+    ga_test = GA(iterations=500, population_size=500, crossover=0.3, mutation=0.02, st_width=1e3, split_point=1,
+               var_num=3, obj_num=3, obj_func=test_obj_func, st=test_st, lb=test_lb, ub=test_ub, no_bounds=False)
+    test_res = ga_test.evolution()
     print(test_res)
