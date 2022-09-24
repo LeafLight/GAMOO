@@ -129,7 +129,7 @@ class GA:
 				# to see if there is other individuals dominate it
                 for p_to_compare in pool:
                     if all(np.greater(p_to_compare[self.var_num:], p_focus[self.var_num:])):
-                        dominate = True	
+                        dominated = True	
                         break
 				# if it's non-dominated, add it to the temp pool
                 if ~dominated:
